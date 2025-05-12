@@ -1,0 +1,11 @@
+services:
+  extremexp-fs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: extremexp-fs
+    ports:
+      - "9090:9090"
+    volumes:
+      - workspace:/app/workspace:wr
+    restart: unless-stopped

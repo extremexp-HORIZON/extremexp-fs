@@ -1,24 +1,25 @@
-FROM python:3.9-alpine
+FROM python:3.13-alpine
 
-COPY . /exp_engine
-WORKDIR /exp_engine
-# apline can not build pandas by default
-# https://copyprogramming.com/howto/install-pandas-in-a-dockerfile
+# Set workdir early
+WORKDIR /app
 
-# Install OpenJDK-11
-# TODO switch to JDK8? (which is officially supported by Proactive)
-RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+# Copy only requirements first for caching
+COPY requirements.txt .
 
-RUN python3 -m pip install --upgrade pip setuptools wheel python-dotenv
-RUN pip install --upgrade --pre proactive
-RUN pip install -r requirements-library.txt
-RUN pip install -r requirements-service.txt
+# Install dependencies
+RUN pip install --upgrade pip setuptools wheel python-dotenv \
+ && pip install -r requirements.txt
 
+# Now copy the full app
 COPY . .
 
-WORKDIR /exp_engine
-ENV PORT 5556
-EXPOSE 5556
+# Optional: set FLASK environment variables if you're using Flask CLI
+# ENV FLASK_APP=run.py
+# ENV FLASK_ENV=development
 
-ENTRYPOINT [ "python" ]
-CMD [ "run.py" ]
+# Set port and expose
+ENV PORT=9090
+EXPOSE 9090
+
+# Default command to run your Flask app
+CMD ["python", "run.py"]
