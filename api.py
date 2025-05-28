@@ -109,7 +109,7 @@ def recover_experiment(experiment_name):
 @app.route('/experiments/', methods=["GET"])
 @cross_origin()
 def get_experiments():
-    experiments = [ exp for exp in workspace_path.glob(f"*.xxp") ]
+    experiments = [ exp for exp in (workspace_path / "experiments").glob(f"*.xxp") ]
     filenames = "\n".join(f.name for f in experiments)
     return Response(filenames, mimetype="text/plain")
 
